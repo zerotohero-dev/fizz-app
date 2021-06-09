@@ -57,7 +57,7 @@ func Notify(str string) {
 func ListenAndServe(
 	appName string,
 	port string,
-	deploymentType string,
+	deploymentType env.DeploymentType,
 	handler http.Handler,
 ) {
 	log.Info("🦄 Service '%s' will listen at port '%s'.", appName, port)
