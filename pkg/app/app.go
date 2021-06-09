@@ -13,12 +13,25 @@ package app
 
 import (
 	"github.com/honeybadger-io/honeybadger-go"
+	"github.com/zerotohero-dev/fizz-env/pkg/env"
 	"log"
 	"net/http"
 )
 
-func ConfigureErrorReporting(honeybadgerApiKey string) (startMonitoring func()) {
-	honeybadger.Configure(honeybadger.Configuration{APIKey: honeybadgerApiKey})
+func ConfigureErrorReporting(
+	honeybadgerApiKey string, deploymentType env.DeploymentType,
+) (startMonitoring func()) {
+	if deploymentType == env.Development {
+		return func() {
+
+		}
+	}
+
+	honeybadger.Configure(honeybadger.Configuration{
+		APIKey: honeybadgerApiKey,
+		Env: string(deploymentType),
+	})
+
 	return func() {
 		honeybadger.Monitor()
 	}
