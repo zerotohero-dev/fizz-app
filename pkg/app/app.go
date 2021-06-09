@@ -14,7 +14,7 @@ package app
 import (
 	"github.com/honeybadger-io/honeybadger-go"
 	"github.com/zerotohero-dev/fizz-env/pkg/env"
-	"log"
+	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 	"net/http"
 )
 
@@ -35,6 +35,17 @@ func ConfigureErrorReporting(
 	return func() {
 		honeybadger.Monitor()
 	}
+}
+
+func Configure(deploymentType env.DeploymentType, appName string, honeybadgerApiKey string, sanitizeAppEnv func()) {
+	sanitizeAppEnv()
+	log.Init(appName)
+	monitor := ConfigureErrorReporting(honeybadgerApiKey, deploymentType)
+	defer monitor()
+}
+
+func Notify(str string) {
+	_, _ = honeybadger.Notify(str)
 }
 
 func ListenAndServe(port string, handler http.Handler) {
