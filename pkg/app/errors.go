@@ -12,14 +12,12 @@
 package app
 
 import (
-	"fmt"
 	"github.com/honeybadger-io/honeybadger-go"
 	"github.com/zerotohero-dev/fizz-env/pkg/env"
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
-	"net/http"
 )
 
-func ConfigureErrorReporting(
+func configureErrorReporting(
 	honeybadgerApiKey string, deploymentType env.DeploymentType,
 ) (startMonitoring func()) {
 	if deploymentType == env.Development {
@@ -46,26 +44,10 @@ func Configure(
 ) {
 	sanitizeAppEnv()
 	log.Init(appName)
-	monitor := ConfigureErrorReporting(honeybadgerApiKey, deploymentType)
+	monitor := configureErrorReporting(honeybadgerApiKey, deploymentType)
 	defer monitor()
 }
 
 func Notify(str string) {
 	_, _ = honeybadger.Notify(str)
-}
-
-func ListenAndServe(
-	appName string,
-	port string,
-	deploymentType env.DeploymentType,
-	handler http.Handler,
-) {
-	log.Info("🦄 Service '%s' will listen at port '%s'.", appName, port)
-
-	Notify(fmt.Sprintf(
-		"'%s' will listen at port '%s' on '%s'.", appName, port, deploymentType,
-		),
-	)
-
-	log.Fatal(http.ListenAndServe(port, honeybadger.Handler(handler)))
 }

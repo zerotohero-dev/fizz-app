@@ -9,6 +9,11 @@
  (& )`   (,((,((;( ))\,
 ```
 
+## v0.1.6
+
+* Split the package into logically-grouped files.
+* Added routing, middleware, and http utilities.
+
 ## v0.1.0
 
 * Initial version.
