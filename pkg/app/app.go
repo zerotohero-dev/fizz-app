@@ -39,8 +39,8 @@ func ConfigureErrorReporting(
 }
 
 func Configure(
-	deploymentType env.DeploymentType,
 	appName string,
+	deploymentType env.DeploymentType,
 	honeybadgerApiKey string,
 	sanitizeAppEnv func(),
 ) {
