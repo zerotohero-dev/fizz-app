@@ -17,10 +17,11 @@ import (
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 )
 
-func configureErrorReporting(
-	honeybadgerApiKey string, deploymentType env.DeploymentType,
-) (startMonitoring func()) {
-	if deploymentType == env.Development {
+var honeybadgerConfigured = false
+
+func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMonitoring func()) {
+	// Bypass honeybadger for development.
+	if e.IsDevelopment() {
 		return func() {
 
 		}
@@ -28,8 +29,10 @@ func configureErrorReporting(
 
 	honeybadger.Configure(honeybadger.Configuration{
 		APIKey: honeybadgerApiKey,
-		Env: string(deploymentType),
+		Env: string(e.Deployment.Type),
 	})
+
+	honeybadgerConfigured = true
 
 	return func() {
 		honeybadger.Monitor()
@@ -37,17 +40,20 @@ func configureErrorReporting(
 }
 
 func Configure(
+	e env.FizzEnv,
 	appName string,
-	deploymentType env.DeploymentType,
 	honeybadgerApiKey string,
 	sanitizeAppEnv func(),
 ) {
 	sanitizeAppEnv()
-	log.Init(appName)
-	monitor := configureErrorReporting(honeybadgerApiKey, deploymentType)
+	log.Init(e, appName)
+	monitor := configureErrorReporting(e, honeybadgerApiKey)
 	defer monitor()
 }
 
 func Notify(str string) {
+	if !honeybadgerConfigured {
+		return
+	}
 	_, _ = honeybadger.Notify(str)
 }

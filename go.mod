@@ -10,6 +10,6 @@ require (
 	github.com/honeybadger-io/honeybadger-go v0.5.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/zerotohero-dev/fizz-entity v0.1.0 // indirect
-	github.com/zerotohero-dev/fizz-env v0.1.10 // indirect
-	github.com/zerotohero-dev/fizz-logging v0.1.2 // indirect
+	github.com/zerotohero-dev/fizz-env v0.1.13 // indirect
+	github.com/zerotohero-dev/fizz-logging v0.1.4 // indirect
 )

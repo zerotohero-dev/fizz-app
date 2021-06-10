@@ -31,8 +31,13 @@ func ListenAndServe(
 
 	Notify(fmt.Sprintf(
 		"'%s' will listen at port '%s' on '%s'.", appName, port, deploymentType,
-	),
-	)
+	))
+
+	// Bypass Honeybadger for development.
+	if isDevelopment(deploymentType) {
+		log.Fatal(http.ListenAndServe(":"+port, handler))
+		return
+	}
 
 	log.Fatal(http.ListenAndServe(":"+port, honeybadger.Handler(handler)))
 }
