@@ -17,7 +17,7 @@ import (
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 )
 
-var honeybadgerConfigured = false
+var canUseHoneybadger = false
 
 func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMonitoring func()) {
 	// Bypass honeybadger for development.
@@ -32,7 +32,7 @@ func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMoni
 		Env: string(e.Deployment.Type),
 	})
 
-	honeybadgerConfigured = true
+	canUseHoneybadger = true
 
 	return func() {
 		honeybadger.Monitor()
@@ -52,7 +52,7 @@ func Configure(
 }
 
 func Notify(str string) {
-	if !honeybadgerConfigured {
+	if !canUseHoneybadger {
 		return
 	}
 	_, _ = honeybadger.Notify(str)

@@ -22,19 +22,19 @@ import (
 )
 
 func ListenAndServe(
+	e env.FizzEnv,
 	appName string,
 	port string,
-	deploymentType env.DeploymentType,
 	handler http.Handler,
 ) {
 	log.Info("🦄 Service '%s' will listen at port '%s'.", appName, port)
 
 	Notify(fmt.Sprintf(
-		"'%s' will listen at port '%s' on '%s'.", appName, port, deploymentType,
+		"'%s' will listen at port '%s' on '%s'.", appName, port, e.Deployment.Type,
 	))
 
 	// Bypass Honeybadger for development.
-	if isDevelopment(deploymentType) {
+	if e.IsDevelopment() {
 		log.Fatal(http.ListenAndServe(":"+port, handler))
 		return
 	}
