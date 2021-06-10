@@ -34,7 +34,7 @@ func ListenAndServe(
 	),
 	)
 
-	log.Fatal(http.ListenAndServe(port, honeybadger.Handler(handler)))
+	log.Fatal(http.ListenAndServe(":"+port, honeybadger.Handler(handler)))
 }
 
 func HandleCors(r *mux.Router) http.Handler {
