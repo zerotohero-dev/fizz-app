@@ -12,13 +12,17 @@
 package app
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/honeybadger-io/honeybadger-go"
 	"github.com/rs/cors"
+	"github.com/zerotohero-dev/fizz-entity/pkg/reqres"
 	"github.com/zerotohero-dev/fizz-env/pkg/env"
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 	"net/http"
+	"reflect"
 )
 
 func ListenAndServe(
@@ -59,4 +63,28 @@ func HandleCors(r *mux.Router) http.Handler {
 	})
 
 	return c.Handler(r)
+}
+
+func getResponseErr(e interface{}) string {
+	v := reflect.ValueOf(e)
+	f := v.FieldByName("Err")
+	return f.String()
+}
+
+func EncodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+	responseErr := getResponseErr(response)
+
+	if responseErr != "" {
+		log.Err("EncodeResponse: error encoding response: %s", responseErr)
+
+		res := reqres.GenericResponse{
+			Err: "There is a problem in your request.",
+		}
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return json.NewEncoder(w).Encode(res)
+	}
+
+	return json.NewEncoder(w).Encode(response)
 }
