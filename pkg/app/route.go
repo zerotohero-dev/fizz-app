@@ -30,3 +30,7 @@ func RouteHealthEndpoints(r *mux.Router) {
 		_, _ = io.WriteString(w, `{"alive": true}`)
 	})
 }
+
+func Route(router *mux.Router, handler http.Handler, method string, path string) {
+	router.Methods(method).Path(path).Handler(handler)
+}
