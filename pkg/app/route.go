@@ -1,7 +1,7 @@
 /*
  *  \
  *  \\,
- *   \\\,^,.,,.                    “Zero to Hero”
+ *   \\\,^,.,,.                     Zero to Hero
  *   ,;7~((\))`;;,,               <zerotohero.dev>
  *   ,(@') ;)`))\;;',    stay up to date, be curious: learn
  *    )  . ),((  ))\;,
@@ -33,4 +33,13 @@ func RouteHealthEndpoints(r *mux.Router) {
 
 func Route(router *mux.Router, handler http.Handler, method string, path string) {
 	router.Methods(method).Path(path).Handler(handler)
+}
+
+func RoutePaths(handler http.Handler, router *mux.Router, method string, paths []string) {
+	for _, path := range paths {
+		Route(
+			router, handler,
+			method, path,
+		)
+	}
 }
