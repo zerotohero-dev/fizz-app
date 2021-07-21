@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"io"
 	"net/http"
+	"path"
 )
 
 func RouteHealthEndpoints(r *mux.Router) {
@@ -36,10 +37,20 @@ func Route(router *mux.Router, handler http.Handler, method string, path string)
 }
 
 func RoutePaths(handler http.Handler, router *mux.Router, method string, paths []string) {
-	for _, path := range paths {
+	for _, p := range paths {
 		Route(
 			router, handler,
-			method, path,
+			method, p,
 		)
 	}
+}
+
+func RoutePrefixedPath(
+	handler http.Handler, router *mux.Router, method string,
+	prefix string, pth string,
+) {
+	RoutePaths(handler, router, method, []string{
+		pth,
+		path.Join("/", prefix, pth),
+	})
 }
