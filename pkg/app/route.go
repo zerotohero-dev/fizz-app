@@ -29,14 +29,29 @@ func Handle404(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, ":(")
 }
 
-func RouteHealthEndpoints(r *mux.Router) {
-	r.Methods("GET").Path("/readyz").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RouteHealthEndpoints(prefix string, r *mux.Router) {
+	readinessPath := "/readyz"
+	livenessPath := "/healthz"
+
+	r.Methods("GET").Path(path.Join("/", prefix, readinessPath)).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, `{"ready": true}`)
 	})
 
-	r.Methods("GET").Path("/healthz").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Methods("GET").Path(path.Join("/", prefix, livenessPath)).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{"alive": true}`)
+	})
+
+	r.Methods("GET").Path(readinessPath).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{"ready": true}`)
+	})
+
+	r.Methods("GET").Path(livenessPath).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, `{"alive": true}`)
