@@ -13,10 +13,21 @@ package app
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 	"io"
 	"net/http"
 	"path"
 )
+
+
+func Handle404(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+
+	log.Info("404:url: '%s'", r.URL.String())
+
+	_, _ = io.WriteString(w, ":(")
+}
 
 func RouteHealthEndpoints(r *mux.Router) {
 	r.Methods("GET").Path("/readyz").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +41,8 @@ func RouteHealthEndpoints(r *mux.Router) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, `{"alive": true}`)
 	})
+
+	r.NotFoundHandler = http.HandlerFunc(Handle404)
 }
 
 func Route(router *mux.Router, handler http.Handler, method string, path string) {
@@ -45,6 +58,7 @@ func RoutePaths(handler http.Handler, router *mux.Router, method string, paths [
 	}
 }
 
+// RoutePrefixedPath can be used to normalize ALB Ingress Controller behavior.
 func RoutePrefixedPath(
 	handler http.Handler, router *mux.Router, method string,
 	prefix string, pth string,
