@@ -65,14 +65,14 @@ func HandleCors(r *mux.Router) http.Handler {
 	return c.Handler(r)
 }
 
-func getResponseErr(e interface{}) string {
+func ToErrorString(e interface{}) string {
 	v := reflect.ValueOf(e)
 	f := v.FieldByName("Err")
 	return f.String()
 }
 
 func EncodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	responseErr := getResponseErr(response)
+	responseErr := ToErrorString(response)
 
 	if responseErr != "" {
 		log.Err("EncodeResponse: error encoding response: %s", responseErr)
