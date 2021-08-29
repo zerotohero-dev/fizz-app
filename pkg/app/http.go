@@ -31,7 +31,7 @@ func ListenAndServe(
 	port string,
 	handler http.Handler,
 ) {
-	log.Info("🦄 Service '%s' will listen at port '%s'.", appName, port)
+	log.Info("🐢 Service '%s' will listen at port '%s'.", appName, port)
 
 	Notify(fmt.Sprintf(
 		"'%s' will listen at port '%s' on '%s'.", appName, port, e.Deployment.Type,
