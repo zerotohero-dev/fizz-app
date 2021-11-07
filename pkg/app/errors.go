@@ -13,15 +13,14 @@ package app
 
 import (
 	"github.com/honeybadger-io/honeybadger-go"
-	"github.com/zerotohero-dev/fizz-env/pkg/env"
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 )
 
 var canUseHoneybadger = false
 
-func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMonitoring func()) {
+func configureErrorReporting(isDevEnv bool, deploymentType string, honeybadgerApiKey string) (startMonitoring func()) {
 	// Bypass honeybadger for development.
-	if e.IsDevelopment() {
+	if isDevEnv {
 		return func() {
 
 		}
@@ -29,7 +28,7 @@ func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMoni
 
 	honeybadger.Configure(honeybadger.Configuration{
 		APIKey: honeybadgerApiKey,
-		Env: string(e.Deployment.Type),
+		Env:    string(deploymentType),
 	})
 
 	canUseHoneybadger = true
@@ -39,15 +38,29 @@ func configureErrorReporting(e env.FizzEnv, honeybadgerApiKey string) (startMoni
 	}
 }
 
-func Configure(
-	e env.FizzEnv,
-	appName string,
-	honeybadgerApiKey string,
-	sanitizeAppEnv func(),
-) {
-	sanitizeAppEnv()
-	log.Init(e, appName)
-	monitor := configureErrorReporting(e, honeybadgerApiKey)
+type ConfigureOptions struct {
+	IsDevEnv          bool
+	AppName           string
+	DeploymentType    string
+	HoneybadgerApiKey string
+	LogDestination    string
+	SanitizeFn        func()
+}
+
+func Configure(opts ConfigureOptions) {
+	opts.SanitizeFn()
+	log.Init(log.InitParams{
+		IsDevEnv:       opts.IsDevEnv,
+		LogDestination: opts.LogDestination,
+		SanitizeFn:     opts.SanitizeFn,
+		AppName:        opts.AppName,
+	})
+
+	monitor := configureErrorReporting(
+		opts.IsDevEnv,
+		opts.DeploymentType,
+		opts.HoneybadgerApiKey,
+	)
 	defer monitor()
 }
 
