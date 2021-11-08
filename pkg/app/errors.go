@@ -19,9 +19,11 @@ import (
 
 var canUseHoneybadger = false
 
-func configureErrorReporting(isDevEnv bool, deploymentType string, honeybadgerApiKey string) (startMonitoring func()) {
+func configureErrorReporting(
+	deploymentType env.DeploymentType, honeybadgerApiKey string,
+) (startMonitoring func()) {
 	// Bypass honeybadger for development.
-	if isDevEnv {
+	if deploymentType == env.Development {
 		return func() {
 
 		}
@@ -40,7 +42,6 @@ func configureErrorReporting(isDevEnv bool, deploymentType string, honeybadgerAp
 }
 
 type ConfigureOptions struct {
-	IsDevEnv          bool
 	AppName           string
 	DeploymentType    env.DeploymentType
 	HoneybadgerApiKey string
@@ -51,14 +52,13 @@ type ConfigureOptions struct {
 func Configure(opts ConfigureOptions) {
 	opts.SanitizeFn()
 	log.Init(log.InitParams{
-		IsDevEnv:       opts.IsDevEnv,
+		IsDevEnv:       opts.DeploymentType == env.Development,
 		LogDestination: opts.LogDestination,
 		SanitizeFn:     opts.SanitizeFn,
 		AppName:        opts.AppName,
 	})
 
 	monitor := configureErrorReporting(
-		opts.IsDevEnv,
 		opts.DeploymentType,
 		opts.HoneybadgerApiKey,
 	)
