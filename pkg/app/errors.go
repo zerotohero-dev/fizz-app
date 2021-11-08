@@ -13,6 +13,7 @@ package app
 
 import (
 	"github.com/honeybadger-io/honeybadger-go"
+	"github.com/zerotohero-dev/fizz-env/pkg/env"
 	"github.com/zerotohero-dev/fizz-logging/pkg/log"
 )
 
@@ -41,7 +42,7 @@ func configureErrorReporting(isDevEnv bool, deploymentType string, honeybadgerAp
 type ConfigureOptions struct {
 	IsDevEnv          bool
 	AppName           string
-	DeploymentType    string
+	DeploymentType    env.DeploymentType
 	HoneybadgerApiKey string
 	LogDestination    string
 	SanitizeFn        func()
